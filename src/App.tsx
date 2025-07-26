@@ -13,7 +13,7 @@ import { downloadMultipleFiles } from './utils/downloadUtils'
 const App: React.FC = () => {
   const [imageFiles, setImageFiles] = useState<ImageFile[]>([])
   const [conversionResults, setConversionResults] = useState<ConversionResult[]>([])
-  const [showSettings, setShowSettings] = useState(true)
+
   
   const [globalSettings, setGlobalSettings] = useState<ConversionSettingsType>({
     format: 'jpeg',
@@ -22,7 +22,7 @@ const App: React.FC = () => {
     resizeMode: 'contain'
   })
 
-  const { convertImages, isProcessing } = useImageConverter()
+  const { convertImages } = useImageConverter()
   
   // Debug: Log when imageFiles changes
   useEffect(() => {
@@ -92,7 +92,6 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-indigo-100 via-white to-pink-100 flex flex-col">
       <Header 
-        onToggleSettings={() => setShowSettings(!showSettings)}
         onDownloadAll={handleDownloadAll}
         showDownloadAll={conversionResults.length > 0}
         conversionCount={conversionResults.length}
@@ -105,9 +104,6 @@ const App: React.FC = () => {
             <FileUploader
               onFilesSelected={handleFilesSelected}
               files={imageFiles}
-              onConvertAndDownload={handleConvertAll}
-              hasFiles={imageFiles.length > 0}
-              isProcessing={isProcessing}
             />
           </div>
           <div className="w-px bg-gray-200" />
@@ -117,8 +113,6 @@ const App: React.FC = () => {
               onChange={handleSettingsChange}
               imageCount={imageFiles.length}
               onGenerate={handleConvertAll}
-              isProcessing={isProcessing}
-              hasFiles={imageFiles.length > 0}
             />
           </div>
         </div>

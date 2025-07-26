@@ -4,14 +4,12 @@ import Button from '../ui/Button'
 
 // Removed stray interface property declarations
 interface HeaderProps {
-  onToggleSettings: () => void;
   onDownloadAll: () => void;
   showDownloadAll: boolean;
   conversionCount: number;
 }
 
 const Header: React.FC<HeaderProps> = ({
-  onToggleSettings,
   onDownloadAll,
   showDownloadAll,
   conversionCount

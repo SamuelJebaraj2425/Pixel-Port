@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { PhotoIcon } from '@heroicons/react/24/outline'
 import type { ImageFile } from '../../types'
 
@@ -6,21 +6,11 @@ import type { ImageFile } from '../../types'
 interface FileUploaderProps {
   onFilesSelected: (files: ImageFile[]) => void
   files?: ImageFile[]
-  onConvertAndDownload?: () => void
-  hasFiles?: boolean
-  isProcessing?: boolean
-  maxFiles?: number
-  maxSize?: number
 }
 
 const FileUploader: React.FC<FileUploaderProps> = ({
   onFilesSelected,
-  files = [],
-  onConvertAndDownload,
-  hasFiles = false,
-  isProcessing = false,
-  maxFiles = 10,
-  maxSize = 10 * 1024 * 1024 // 10MB
+  files = []
 }) => {
   const [error, setError] = useState<string>('')
   const [isDragActive, setIsDragActive] = useState(false)
