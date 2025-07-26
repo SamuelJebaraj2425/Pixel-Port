@@ -12,6 +12,7 @@ export interface ImageFile {
   height?: number
   originalWidth?: number
   originalHeight?: number
+  lastModified?: number
 }
 
 export interface ConversionResult {

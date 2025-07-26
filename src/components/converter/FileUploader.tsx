@@ -1,11 +1,11 @@
-import React, { useCallback, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { PhotoIcon, CloudArrowUpIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
+import React, { useCallback, useRef, useState } from 'react'
+import { PhotoIcon } from '@heroicons/react/24/outline'
 import type { ImageFile } from '../../types'
-import Button from '../ui/Button'
+
 
 interface FileUploaderProps {
   onFilesSelected: (files: ImageFile[]) => void
+  files?: ImageFile[]
   onConvertAndDownload?: () => void
   hasFiles?: boolean
   isProcessing?: boolean
@@ -15,6 +15,7 @@ interface FileUploaderProps {
 
 const FileUploader: React.FC<FileUploaderProps> = ({
   onFilesSelected,
+  files = [],
   onConvertAndDownload,
   hasFiles = false,
   isProcessing = false,
@@ -22,16 +23,50 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   maxSize = 10 * 1024 * 1024 // 10MB
 }) => {
   const [error, setError] = useState<string>('')
+  const [isDragActive, setIsDragActive] = useState(false)
 
-  const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+  // Generate a simple PNG image using canvas and download it
+
+
+
+  // File input handler
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setError('')
+    const fileList = e.target.files;
+    if (!fileList) return;
+    handleFiles(Array.from(fileList));
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
 
-    if (rejectedFiles.length > 0) {
-      const error = rejectedFiles[0].errors[0]
-      setError(`File rejected: ${error.message}`)
-      return
+  // Drag and drop handlers
+  const handleDragOver = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    handleFiles(droppedFiles);
+  };
+
+  // Common handler for both input and drop
+  const handleFiles = (fileList: File[]) => {
+    const acceptedFiles = fileList.filter(file => file.type.startsWith('image/'));
+    if (acceptedFiles.length === 0) {
+      setError('Please select a valid image file.');
+      return;
     }
-
     const imageFiles: ImageFile[] = acceptedFiles.map(file => ({
       id: Math.random().toString(36).substr(2, 9),
       file,
@@ -40,84 +75,49 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       type: file.type,
       url: URL.createObjectURL(file),
       originalFormat: file.type.split('/')[1],
-      targetFormat: 'jpeg',
-      quality: 90
-    }))
-
-    onFilesSelected(imageFiles)
-  }, [onFilesSelected])
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.webp', '.gif', '.bmp', '.tiff', '.svg']
-    },
-    maxFiles,
-    maxSize,
-    multiple: true
-  })
+      targetFormat: file.type.split('/')[1],
+      quality: 90,
+      lastModified: file.lastModified
+    }));
+    onFilesSelected([...files, ...imageFiles]);
+  };
 
   return (
-    <div className="w-full">
-      <div
-        {...getRootProps()}
-        className={`
-          relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-200
-          ${isDragActive 
-            ? 'border-primary-500 bg-primary-50' 
-            : 'border-gray-300 hover:border-primary-400 hover:bg-gray-50'
-          }
-        `}
+    <div className="w-full h-full flex flex-col justify-center items-center">
+      <label
+        htmlFor="file-upload"
+        className={`w-full h-48 flex flex-col justify-center items-center border-2 border-dashed rounded-xl cursor-pointer transition bg-white/60 ${isDragActive ? 'border-blue-400 bg-blue-50' : 'border-blue-200 hover:border-blue-400'}`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
       >
-        <input {...getInputProps()} />
-        
-        <div className="flex flex-col items-center space-y-4">
-          <div className={`p-4 rounded-full ${isDragActive ? 'bg-primary-100' : 'bg-gray-100'}`}>
-            {isDragActive ? (
-              <CloudArrowUpIcon className="w-12 h-12 text-primary-600" />
-            ) : (
-              <PhotoIcon className="w-12 h-12 text-gray-600" />
-            )}
-          </div>
-          
-          <div>
-            <p className="text-lg font-medium text-gray-900">
-              {isDragActive ? 'Drop images here' : 'Drag & drop images here'}
-            </p>
-            <p className="text-sm text-gray-500 mt-1">
-              or click to browse files
-            </p>
-          </div>
-          
-          <div className="text-xs text-gray-400">
-            <p>Supports: JPEG, PNG, WebP, GIF, BMP, TIFF, SVG</p>
-            <p>Max size: {Math.round(maxSize / (1024 * 1024))}MB per file</p>
-            <p>Max files: {maxFiles}</p>
-          </div>
+        <div className="flex flex-col items-center pointer-events-none">
+          <PhotoIcon className="w-16 h-16 text-blue-300 mb-2" />
+          <span className="text-lg font-medium text-blue-900">Drop your image here, or <span className="text-blue-500 underline">browse</span></span>
+          <span className="text-sm text-blue-400 mt-1">Supports: JPG, JPEG2000, PNG</span>
         </div>
-      </div>
-
+        <input
+          id="file-upload"
+          type="file"
+          accept="image/jpeg,image/png,image/jp2,image/jpx,image/j2k,image/jpf"
+          multiple
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleFileChange}
+        />
+      </label>
       {error && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="mt-4 p-3 bg-red-100 border border-red-200 rounded-md w-full text-center">
+          <p className="text-sm text-red-500">{error}</p>
         </div>
       )}
-      
-      {/* Convert & Download Button */}
-      {hasFiles && (
-        <div className="mt-4">
-          <Button
-            onClick={onConvertAndDownload}
-            disabled={isProcessing || !hasFiles}
-            isLoading={isProcessing}
-            variant="primary"
-            fullWidth
-          >
-            <div className="flex items-center justify-center">
-              <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
-              {isProcessing ? 'Converting...' : 'Convert & Download Images'}
-            </div>
-          </Button>
+      {/* Status/Completed area (optional) */}
+      {files.length > 0 && (
+        <div className="w-full mt-12 bg-blue-50 border border-blue-100 rounded-xl flex items-center justify-between px-6 py-4">
+          <span className="font-medium text-blue-900">Uploaded</span>
+          <span className="text-green-500">
+            <svg width="32" height="32" fill="none" viewBox="0 0 32 32"><circle cx="16" cy="16" r="16" fill="#E6F9F0"/><path stroke="#22C55E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M10 17l4 4 8-8"/></svg>
+          </span>
         </div>
       )}
     </div>
