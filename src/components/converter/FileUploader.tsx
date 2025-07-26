@@ -69,7 +69,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
       quality: 90,
       lastModified: file.lastModified
     }));
-    onFilesSelected([...files, ...imageFiles]);
+    onFilesSelected(imageFiles);
   };
 
   return (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import type { ConversionSettings, ImageFormat } from '../../types'
 import { getSupportedFormats } from '../../utils/imageConverter'
 
@@ -14,6 +14,7 @@ interface ConversionSettingsProps {
   onGenerate?: () => void;
   isProcessing?: boolean;
   hasFiles?: boolean;
+  showPopup?: boolean;
 }
 
 const ConversionSettingsComponent: React.FC<ConversionSettingsProps> = ({
@@ -21,10 +22,9 @@ const ConversionSettingsComponent: React.FC<ConversionSettingsProps> = ({
   onChange,
   imageCount,
   onGenerate,
-  isProcessing,
-  hasFiles
+  // isProcessing and hasFiles removed
+  showPopup
 }) => {
-  const [showPopup, setShowPopup] = useState(false);
   const formats = getSupportedFormats()
 
 
@@ -32,15 +32,6 @@ const ConversionSettingsComponent: React.FC<ConversionSettingsProps> = ({
     onChange({ ...settings, [key]: value })
   }
 
-  // Listen for conversion completion (zip generated)
-  useEffect(() => {
-    if (!isProcessing && hasFiles) {
-      // Show popup for 2 seconds after conversion
-      setShowPopup(true);
-      const timer = setTimeout(() => setShowPopup(false), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isProcessing]);
 
   return (
     <div className="max-w-sm text-left relative">
@@ -71,20 +62,23 @@ const ConversionSettingsComponent: React.FC<ConversionSettingsProps> = ({
       <div className="flex justify-end mt-6 space-x-3">
         <Button
           onClick={onGenerate}
-          disabled={isProcessing || !hasFiles}
-          isLoading={isProcessing}
+          disabled={!imageCount}
           variant="primary"
           className="bg-blue-600 hover:bg-blue-700 text-white"
         >
-          {isProcessing ? 'Generating...' : 'Convert'}
+          Convert
         </Button>
       </div>
       {/* Popup for zip generated */}
-      {showPopup && (
-        <div className="mt-4 w-full bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded shadow-lg animate-fade-in text-center">
-          Zip file generated and download started!
-        </div>
-      )}
+      <div className="relative" style={{ minHeight: '2.5rem' }}>
+        {showPopup && (
+          <div className="absolute left-0 right-0" style={{ bottom: '-2.5rem' }}>
+            <div className="bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded shadow-lg animate-fade-in text-center z-20">
+              Zip file generated and download started!
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

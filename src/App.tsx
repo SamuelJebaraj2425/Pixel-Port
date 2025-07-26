@@ -13,6 +13,7 @@ import { downloadMultipleFiles } from './utils/downloadUtils'
 const App: React.FC = () => {
   const [imageFiles, setImageFiles] = useState<ImageFile[]>([])
   const [conversionResults, setConversionResults] = useState<ConversionResult[]>([])
+  const [showPopup, setShowPopup] = useState(false)
 
   
   const [globalSettings, setGlobalSettings] = useState<ConversionSettingsType>({
@@ -32,6 +33,7 @@ const App: React.FC = () => {
 
   // When files are selected, set their targetFormat to the current globalSettings.format
   const handleFilesSelected = useCallback((files: ImageFile[]) => {
+    console.log('handleFilesSelected called with:', files);
     const updatedFiles = files.map(file => ({
       ...file,
       lastModified: (file.file && file.file.lastModified) || (file.lastModified ?? Date.now()),
@@ -55,7 +57,11 @@ const App: React.FC = () => {
 
 
   const handleConvertAll = async () => {
-    if (imageFiles.length === 0) return
+    console.log('handleConvertAll called. imageFiles:', imageFiles);
+    if (imageFiles.length === 0) {
+      console.warn('No images to convert.');
+      return;
+    }
 
     try {
       const results = await convertImages(imageFiles, globalSettings)
@@ -64,6 +70,8 @@ const App: React.FC = () => {
       // Automatically download the converted images
       if (results.length > 0) {
         downloadMultipleFiles(results)
+        setShowPopup(true);
+        setTimeout(() => setShowPopup(false), 2000);
       }
     } catch (error) {
       console.error('Conversion failed:', error)
@@ -113,6 +121,7 @@ const App: React.FC = () => {
               onChange={handleSettingsChange}
               imageCount={imageFiles.length}
               onGenerate={handleConvertAll}
+              showPopup={showPopup}
             />
           </div>
         </div>
