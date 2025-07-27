@@ -82,8 +82,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({
         onDrop={handleDrop}
       >
         <div className="flex flex-col items-center pointer-events-none">
-          <PhotoIcon className="w-16 h-16 text-blue-300 mb-2" />
-          <span className="text-lg font-medium text-blue-900">Drop your image here, or <span className="text-blue-500 underline">browse</span></span>
+          <PhotoIcon className="w-12 h-12 sm:w-16 sm:h-16 text-blue-300 mb-2" />
+          <div className="text-center max-[420px]:space-y-1">
+            <span className="text-base sm:text-lg font-medium text-blue-900 block max-[420px]:mb-1">Drop your image here</span>
+            <span className="text-base sm:text-lg font-medium text-blue-900 block"><span className="text-blue-500 underline">browse</span></span>
+          </div>
           <span className="text-sm text-blue-400 mt-1">Supports: JPG, JPEG2000, PNG</span>
         </div>
         <input

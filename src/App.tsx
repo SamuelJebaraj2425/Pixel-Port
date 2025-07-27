@@ -105,7 +105,7 @@ const App: React.FC = () => {
         conversionCount={conversionResults.length}
       />
 
-      <main className="flex-1 flex flex-col items-center justify-center pt-4 pb-8 max-[420px]:pt-2 max-[420px]:pb-6 px-4">
+      <main className="flex-1 flex flex-col items-center justify-center py-12 px-4">
         <div className="w-full max-w-4xl min-h-[28rem] bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl flex flex-col min-[421px]:flex-row overflow-hidden border border-gray-200">
           {/* FileUploader above on mobile (<420px), left on desktop */}
           <div className="order-1 min-[421px]:order-none min-[421px]:flex-1 p-4 min-[421px]:p-8 flex flex-col justify-center h-full min-[421px]:min-h-[24rem]">
@@ -159,7 +159,7 @@ const App: React.FC = () => {
                   >
                     <span className="col-span-6 truncate max-w-xs text-gray-700" title={file.name}>{file.name}</span>
                     <span className="col-span-2 text-xs text-gray-500 text-right">{(file.size / 1024).toFixed(1)} KB</span>
-                    <span className="col-span-2 text-xs text-gray-500 text-center uppercase">{file.type || 'Unknown'}</span>
+                    <span className="col-span-2 text-xs text-gray-500 text-center uppercase">{file.type?.replace('image/', '') || 'Unknown'}</span>
                     <span className="col-span-2 flex justify-end">
                       <button
                         className="min-[421px]:px-2 min-[421px]:py-1 p-1.5 text-xs text-red-500 hover:text-white hover:bg-red-500 rounded transition-colors border border-red-200 flex items-center"
