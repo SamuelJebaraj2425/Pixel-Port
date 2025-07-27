@@ -105,17 +105,17 @@ const App: React.FC = () => {
         conversionCount={conversionResults.length}
       />
 
-      <main className="flex-1 flex flex-col items-center justify-center py-12">
-        <div className="w-full max-w-4xl min-h-[28rem] bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl flex flex-row overflow-hidden border border-gray-200">
-          {/* FileUploader left, vertical divider, ConversionSettings right */}
-          <div className="flex-1 p-8 flex flex-col justify-center h-full min-h-[24rem]">
+      <main className="flex-1 flex flex-col items-center justify-center pt-4 pb-8 max-[420px]:pt-2 max-[420px]:pb-6 px-4">
+        <div className="w-full max-w-4xl min-h-[28rem] bg-white/80 backdrop-blur-md rounded-2xl shadow-2xl flex flex-col min-[421px]:flex-row overflow-hidden border border-gray-200">
+          {/* FileUploader above on mobile (<420px), left on desktop */}
+          <div className="order-1 min-[421px]:order-none min-[421px]:flex-1 p-4 min-[421px]:p-8 flex flex-col justify-center h-full min-[421px]:min-h-[24rem]">
             <FileUploader
               onFilesSelected={handleFilesSelected}
               files={imageFiles}
             />
           </div>
-          <div className="w-px bg-gray-200" />
-          <div className="flex-1 p-8 flex flex-col justify-center h-full min-h-[24rem]">
+          <div className="hidden min-[421px]:block w-px bg-gray-200" />
+          <div className="order-2 min-[421px]:order-none min-[421px]:flex-1 p-4 min-[421px]:p-8 flex flex-col justify-center h-full min-[421px]:min-h-[24rem]">
             <ConversionSettings
               settings={globalSettings}
               onChange={handleSettingsChange}
@@ -146,6 +146,7 @@ const App: React.FC = () => {
                 <Button
                   onClick={handleClearAll}
                   variant="ghost"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
                   Clear All
                 </Button>
@@ -161,14 +162,17 @@ const App: React.FC = () => {
                     <span className="col-span-2 text-xs text-gray-500 text-center uppercase">{file.type || 'Unknown'}</span>
                     <span className="col-span-2 flex justify-end">
                       <button
-                        className="px-2 py-1 text-xs text-red-500 hover:text-white hover:bg-red-500 rounded transition-colors border border-red-200"
+                        className="min-[421px]:px-2 min-[421px]:py-1 p-1.5 text-xs text-red-500 hover:text-white hover:bg-red-500 rounded transition-colors border border-red-200 flex items-center"
                         title="Delete image"
                         onClick={() => {
                           URL.revokeObjectURL(file.url)
                           setImageFiles(prev => prev.filter(f => f.url !== file.url))
                         }}
                       >
-                        Delete
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 min-[421px]:hidden" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                        <span className="hidden min-[421px]:inline">Delete</span>
                       </button>
                     </span>
                   </li>

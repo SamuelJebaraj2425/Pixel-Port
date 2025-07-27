@@ -73,10 +73,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center">
+    <div className="w-[280px] sm:max-w-sm h-full flex flex-col justify-center items-center mx-auto">
       <label
         htmlFor="file-upload"
-        className={`w-full h-48 flex flex-col justify-center items-center border-2 border-dashed rounded-xl cursor-pointer transition bg-white/60 ${isDragActive ? 'border-blue-400 bg-blue-50' : 'border-blue-200 hover:border-blue-400'}`}
+        className={`w-full h-40 sm:h-48 flex flex-col justify-center items-center border-2 border-dashed rounded-xl cursor-pointer transition bg-white/60 ${isDragActive ? 'border-blue-400 bg-blue-50' : 'border-blue-200 hover:border-blue-400'}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
