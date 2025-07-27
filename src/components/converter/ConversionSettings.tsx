@@ -80,7 +80,7 @@ const ConversionSettingsComponent: React.FC<ConversionSettingsProps> = ({
         </div>
         {/* Success Popup - Desktop */}
         {showPopup && (
-          <div className="max-[420px]:hidden absolute left-0 right-0" style={{ bottom: '-2.5rem' }}>
+          <div className="max-[420px]:hidden absolute left-0 right-0" style={{ bottom: '-5.5rem' }}>
             <div className="bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded shadow-lg animate-fade-in text-center z-20">
               Zip file generated and download started!
             </div>
